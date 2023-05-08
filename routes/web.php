@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CsvController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -13,7 +14,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    \League\Csv\Reader::createFromPath();
-    return view('welcome');
-});
+Route::get('/import', [CsvController::class, 'import']);
+Route::get('/export', [CsvController::class, 'export']);

@@ -1,0 +1,66 @@
+version: '3.8'
+services:
+
+    php:
+        build:
+            args:
+                user: dev
+                uid: 1000
+            context: .
+            dockerfile: Dockerfile
+        image: task-php
+        container_name: task-php
+        restart: unless-stopped
+        working_dir: /var/www
+        depends_on:
+            - mysql
+        volumes:
+            - ./:/var/www
+            - ./docker-compose/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+            - ./docker-compose/php/conf.d/error_reporting.ini:/usr/local/etc/php/conf.d/error_reporting.ini
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        networks:
+            - task
+
+    nginx:
+        image: nginx:alpine
+        container_name: task-nginx
+        restart: unless-stopped
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes:
+            - ./:/var/www
+            - ./docker-compose/nginx/conf.d/:/etc/nginx/conf.d/
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        networks:
+            - task
+
+    mysql:
+        image: mysql:8.0
+        container_name: task-mysql
+        restart: unless-stopped
+        ports:
+            - "33060:3306"
+        environment:
+            MYSQL_DATABASE: ${DB_DATABASE}
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            SERVICE_TAGS: dev
+            SERVICE_NAME: mysql
+        volumes:
+            - mysqldata:/var/lib/mysql
+            - ./docker-compose/mysql/my.cnf:/etc/mysql/conf.d/my_custom.cnf
+        networks:
+            - task
+
+volumes:
+    mysqldata:
+    php:
+        driver: "local"
+
+networks:
+    task:
+        driver: bridge

@@ -1,3 +1,4 @@
+/.phpunit.cache
 /node_modules
 /public/build
 /public/hot
@@ -15,11 +16,4 @@ npm-debug.log
 yarn-error.log
 /.fleet
 /.idea
-.idea
 /.vscode
-horizon.log
-storage/videos/*
-.cache
-docker-compose/volumes
-composer.lock
-
